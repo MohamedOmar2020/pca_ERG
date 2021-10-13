@@ -12,7 +12,7 @@ parser.add_argument('--seed', type=int, default=1,
                     help='random seed (default: 1)')
 parser.add_argument('--k', type=int, default=10,
                     help='number of splits (default: 10)')
-parser.add_argument('--task', type=str, choices=['task_1_tumor_vs_normal', 'task_2_tumor_subtyping', 'blca_HGUC_vs_normal'])
+parser.add_argument('--task', type=str, choices=['task_1_tumor_vs_normal', 'task_2_tumor_subtyping', 'pca_gleason'])
 parser.add_argument('--val_frac', type=float, default= 0.1,
                     help='fraction of labels for validation (default: 0.1)')
 parser.add_argument('--test_frac', type=float, default= 0.1,
@@ -30,13 +30,13 @@ if args.task == 'task_1_tumor_vs_normal':
                             patient_strat=True,
                             ignore=[])
 
-if args.task == 'blca_HGUC_vs_normal':
+if args.task == 'pca_gleason':
     args.n_classes=2
-    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/blca_HGUC_vs_normal.csv',
+    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/pca_gleason.csv',
                             shuffle = False,
                             seed = args.seed,
                             print_info = True,
-                            label_dict = {'NHGUC':0, 'HGUC':1},
+                            label_dict = {'low':0, 'high':1},
                             patient_strat=False,
                             label_col = 'label',
                             ignore=[])
