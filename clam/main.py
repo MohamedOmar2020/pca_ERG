@@ -171,7 +171,7 @@ if args.task == 'pca_gleason':
                             print_info = True,
                             label_dict = {'low':0, 'high':1},
                             patient_strat=False,
-                            label_col = 'label',
+                            label_col = 'Gleason',
                             ignore=[])
 
 elif args.task == 'task_2_tumor_subtyping':
