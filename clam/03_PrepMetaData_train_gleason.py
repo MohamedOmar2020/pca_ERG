@@ -29,7 +29,7 @@ Gleason = pd.DataFrame({'Gleason':KarenLabels['Gleason_HighLow'], 'case_id':Kare
 
 #################################
 ## Get the IDs for the WSIs and patients
-slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam/patches'
+slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam2/patches'
 slides = listdir(slide_dir)
 
 # make a dataframe: slide_id: slide ID! // case_id: patient ID
