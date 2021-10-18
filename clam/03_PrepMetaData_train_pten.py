@@ -32,7 +32,7 @@ pten['case_id'] =  [i.replace('.', '-') for i in pten['case_id']]
 
 #################################
 ## Get the IDs for the WSIs and patients
-slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam2/patches'
+slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_256/patches'
 slides = listdir(slide_dir)
 
 # make a dataframe: slide_id: slide ID! // case_id: patient ID
@@ -46,7 +46,8 @@ MetaData_clam['slide_id'] = MetaData_clam['slide_id'].str.replace('.h5','')
 MetaData_clam = pd.merge(MetaData_clam, pten, left_on='case_id', right_on='case_id')
 
 # print the slides/patients
-print(pd.crosstab(MetaData_clam['case_id'], MetaData_clam['slide_id']))
+print(MetaData_clam['pten_status'].value_counts())
+print(MetaData_clam)
 
 # Save to disk
 MetaData_clam.to_csv('dataset_csv/pca_pten.csv')
