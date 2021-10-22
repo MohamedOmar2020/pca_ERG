@@ -12,7 +12,7 @@ parser.add_argument('--seed', type=int, default=1,
                     help='random seed (default: 1)')
 parser.add_argument('--k', type=int, default=10,
                     help='number of splits (default: 10)')
-parser.add_argument('--task', type=str, choices=['task_2_tumor_subtyping', 'pca_gleason', 'pca_pten'])
+parser.add_argument('--task', type=str, choices=['task_2_tumor_subtyping', 'pca_ERG', 'pca_pten', 'pca_gleason'])
 parser.add_argument('--val_frac', type=float, default= 0.1,
                     help='fraction of labels for validation (default: 0.1)')
 parser.add_argument('--test_frac', type=float, default= 0.1,
@@ -20,16 +20,16 @@ parser.add_argument('--test_frac', type=float, default= 0.1,
 
 args = parser.parse_args()
 
-if args.task == 'pca_gleason':
-    args.n_classes=2
-    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/pca_gleason.csv',
-                            shuffle = False,
-                            seed = args.seed,
-                            print_info = True,
-                            label_dict = {'low':0, 'high':1},
-                            patient_strat=False,
-                            label_col = 'Gleason',
-                            ignore=[])
+#if args.task == 'pca_gleason':
+#    args.n_classes=2
+#    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/pca_gleason.csv',
+#                            shuffle = False,
+#                            seed = args.seed,
+#                            print_info = True,
+#                            label_dict = {'low':0, 'high':1},
+#                            patient_strat=False,
+#                            label_col = 'Gleason',
+#                            ignore=[])
 
 #if args.task == 'pca_pten':
 #    args.n_classes=2
@@ -41,6 +41,17 @@ if args.task == 'pca_gleason':
 #                            patient_strat=False,
 #                            label_col = 'pten_status',
 #                            ignore=[])
+
+if args.task == 'pca_ERG':
+    args.n_classes=2
+    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/pca_ERG.csv',
+                            shuffle = False,
+                            seed = args.seed,
+                            print_info = True,
+                            label_dict = {'wt':0, 'fusion':1},
+                            patient_strat=False,
+                            label_col = 'label',
+                            ignore=[])
 
 elif args.task == 'task_2_tumor_subtyping':
     args.n_classes=3
