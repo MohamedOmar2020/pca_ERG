@@ -41,7 +41,7 @@ parser.add_argument('--fold', type=int, default=-1, help='single fold to evaluat
 parser.add_argument('--micro_average', action='store_true', default=False, 
                     help='use micro_average instead of macro_avearge for multiclass AUC')
 parser.add_argument('--split', type=str, choices=['train', 'val', 'test', 'all'], default='test')
-parser.add_argument('--task', type=str, choices=['task_2_tumor_subtyping', 'pca_ETV1', 'pca_ETV4', 'pca_ERG', 'pca_gleason', 'pca_pten'])
+parser.add_argument('--task', type=str, choices=['task_2_tumor_subtyping', 'pca_SPOP', 'pca_TP53', 'pca_ETV1', 'pca_ETV4', 'pca_ERG', 'pca_gleason', 'pca_pten'])
 args = parser.parse_args()
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -102,9 +102,9 @@ print(settings)
 #                            label_col = 'pten_status',
 #                            ignore=[])
 
-if args.task == 'pca_ETV1':
+if args.task == 'pca_ETV4':
     args.n_classes=2
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ETV1.csv',
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ETV4.csv',
                             data_dir= args.data_root_dir,
                             shuffle = False,
                             print_info = True,
