@@ -174,9 +174,9 @@ print('\nLoad Dataset')
 #                            label_col = 'label',
 #                            ignore=[])
 
-if args.task == 'pca_ARv7':
+if args.task == 'pca_TP53':
     args.n_classes=2
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ARv7.csv',
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_TP53.csv',
                             data_dir= args.data_root_dir,
                             shuffle = False,
                             seed = args.seed,

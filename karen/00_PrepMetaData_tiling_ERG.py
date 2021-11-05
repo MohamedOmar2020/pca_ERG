@@ -19,6 +19,9 @@ paths = glob.glob(path.join(slidedir, "*svs"))
 MetaData = pd.DataFrame({'SVS_Path': paths}, slides)
 MetaData['PatientID'] = MetaData.index
 
+
+# Add the patient ID
+MetaData['PatientID'] =  [i.replace(i, '-'.join(i.split("-")[0:3])) for i in MetaData['slides']]
 MetaData.index = np.linspace(0, MetaData.shape[0]-1, num= MetaData.shape[0]).astype('int')
 
 print(MetaData.shape)
