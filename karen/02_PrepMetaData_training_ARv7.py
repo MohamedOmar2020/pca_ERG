@@ -5,7 +5,6 @@ from pathlib import Path
 from os import listdir,path,getcwd,walk
 import glob
 from itertools import chain
-
 import torchvision.models
 from sklearn.model_selection import train_test_split
 
@@ -28,7 +27,7 @@ ARv7 = pd.DataFrame({'label':clinical['label'], 'PatientID':clinical['PATIENT_ID
 
 ################################################
 ## Get the paths for the tiled WSIs
-tile_dir = r'/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_karen/2_5x/'
+tile_dir = r'/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_karen/10x/'
 tiles = listdir(tile_dir)
 
 # path for each slide folder
@@ -60,6 +59,7 @@ all = [Train, validation, test]
 MetaData_training = pd.concat(all)
 print(MetaData_training['Train_Test'].value_counts())
 print(pd.crosstab(MetaData_training['Train_Test'], MetaData_training['label']))
+print(MetaData_training.shape)
 
 # Save to disk
 MetaData_training.to_csv('objs/karen/MetaData_training_ARv7.csv')
