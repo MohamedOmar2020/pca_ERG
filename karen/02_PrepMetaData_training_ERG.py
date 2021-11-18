@@ -5,7 +5,6 @@ from pathlib import Path
 from os import listdir,path,getcwd,walk
 import glob
 from itertools import chain
-
 import torchvision.models
 from sklearn.model_selection import train_test_split
 
@@ -13,19 +12,26 @@ from sklearn.model_selection import train_test_split
 ## Metadata for training
 
 # Read the TCGA metadata
-clinical = pd.read_excel('data/MolTaxPCA_annot.xls')
+metadata = pd.read_csv('data/tcga_meta_data_all.csv')
 
-clinical['label'] = clinical['TP53_mut']
-clinical['label'].value_counts()
+metadata['label'] = metadata['ERGstatus']
+metadata['label'].value_counts()
 
-## str to int
 # rename
-#clinical['label'].replace('none', 0, inplace=True)
-#clinical['label'].replace('fusion', 1, inplace=True)
+metadata['label'].replace('ERG NEGATIVE', '0', inplace=True)
+metadata['label'].replace('ERG POSITIVE', '1', inplace=True)
+
+metadata.dropna(subset = ['label'], inplace = True)
+
+metadata['label'] = metadata['label'].astype(int)
 
 ## Extract the important clinical labels eg. Gleason grade
-TP53 = pd.DataFrame({'label':clinical['label'], 'PatientID':clinical['PATIENT_ID']})
+ERG = pd.DataFrame({'label':metadata['label'], 'PatientID':metadata['patient_id']})
 
+# replace the '.' with '-'
+ERG['PatientID'] =  [i.replace('.', '-') for i in ERG['PatientID']]
+
+print(ERG.shape)
 ################################################
 ## Get the paths for the tiled WSIs
 tile_dir = r'/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_karen/10x/'
@@ -42,11 +48,7 @@ MetaData_training['PatientID'] = MetaData_training.index
 MetaData_training['PatientID'] =  [i.replace(i, '-'.join(i.split("-")[0:3])) for i in MetaData_training['PatientID']]
 MetaData_training.index = np.linspace(0, MetaData_training.shape[0]-1, num= MetaData_training.shape[0]).astype('int')
 
-print(MetaData_training['PatientID'])
-
-MetaData_training = pd.merge(MetaData_training, TP53, left_on = 'PatientID', right_on='PatientID')
-
-print(MetaData_training['label'].value_counts())
+MetaData_training = pd.merge(MetaData_training, ERG, left_on = 'PatientID', right_on='PatientID')
 
 # Train-validation-test
 y = MetaData_training['label']
@@ -58,9 +60,11 @@ validation['Train_Test'] = 'Validation'
 test['Train_Test'] = 'Test'
 all = [Train, validation, test]
 MetaData_training = pd.concat(all)
+
 print(MetaData_training['Train_Test'].value_counts())
 print(pd.crosstab(MetaData_training['Train_Test'], MetaData_training['label']))
+print(MetaData_training.shape)
 
 # Save to disk
-MetaData_training.to_csv('objs/karen/MetaData_training_TP53_10x.csv')
+MetaData_training.to_csv('objs/karen/MetaData_training_ERG.csv')
 

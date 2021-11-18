@@ -151,30 +151,20 @@ if args.model_type in ['clam_sb', 'clam_mb']:
 
 print('\nLoad Dataset')
 
-#if args.task == 'task_1_tumor_vs_normal':
-#    args.n_classes=2
-#    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/tumor_vs_normal_dummy_clean.csv',
-#                            data_dir= os.path.join(args.data_root_dir, 'tumor_vs_normal_resnet_features'),
-#                            shuffle = False, 
-#                            seed = args.seed, 
-#                            print_info = True,
-#                           label_dict = {'normal_tissue':0, 'tumor_tissue':1},
-#                            patient_strat=False,
-#                            ignore=[])
 
-#if args.task == 'pca_ETV4':
-#    args.n_classes=2
-#    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ETV4.csv',
-#                            data_dir= args.data_root_dir,
-#                            shuffle = False,
-#                            seed = args.seed,
-#                            print_info = True,
-#                            label_dict = {'wt':0, 'fusion':1},
-#                            patient_strat=False,
-#                            label_col = 'label',
-#                            ignore=[])
+if args.task == 'pca_ETV4':
+    args.n_classes=2
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ETV4.csv',
+                            data_dir= args.data_root_dir,
+                            shuffle = False,
+                            seed = args.seed,
+                            print_info = True,
+                            label_dict = {'wt':0, 'fusion':1},
+                            patient_strat=False,
+                            label_col = 'label',
+                            ignore=[])
 
-if args.task == 'pca_TP53':
+elif args.task == 'pca_TP53':
     args.n_classes=2
     dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_TP53.csv',
                             data_dir= args.data_root_dir,
@@ -186,29 +176,29 @@ if args.task == 'pca_TP53':
                             label_col = 'label',
                             ignore=[])
 
-#if args.task == 'pca_gleason':
-#    args.n_classes=2
-#    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_gleason.csv',
-#                            data_dir= args.data_root_dir,
-#                            shuffle = False,
-#                            seed = args.seed,
-#                            print_info = True,
-#                            label_dict = {'low':0, 'high':1},
-#                            patient_strat=False,
-#                            label_col = 'Gleason',
-#                            ignore=[])
+elif args.task == 'pca_gleason':
+    args.n_classes=2
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_gleason.csv',
+                            data_dir= args.data_root_dir,
+                            shuffle = False,
+                            seed = args.seed,
+                            print_info = True,
+                            label_dict = {'low':0, 'high':1},
+                            patient_strat=False,
+                            label_col = 'Gleason',
+                            ignore=[])
 
-#if args.task == 'pca_pten':
-#    args.n_classes=2
-#    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten.csv',
-#                            data_dir= args.data_root_dir,
-#                            shuffle = False,
-#                            seed = args.seed,
-#                            print_info = True,
-#                            label_dict = {'neg':0, 'pos':1},
-#                            patient_strat=False,
-#                            label_col = 'pten_status',
-#                            ignore=[])
+elif args.task == 'pca_pten':
+    args.n_classes=2
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten.csv',
+                            data_dir= args.data_root_dir,
+                            shuffle = False,
+                            seed = args.seed,
+                            print_info = True,
+                            label_dict = {'neg':0, 'pos':1},
+                            patient_strat=False,
+                            label_col = 'pten_status',
+                            ignore=[])
 
 elif args.task == 'task_2_tumor_subtyping':
     args.n_classes=3

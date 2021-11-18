@@ -83,6 +83,20 @@ class CLAM_SB(nn.Module):
         fc = [nn.Linear(size[0], size[1]), nn.ReLU()]
         if dropout:
             fc.append(nn.Dropout(0.25))
+        
+        ## Add more layers?
+        fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
+        if dropout:
+           fc.append(nn.Dropout(0.25))
+
+        fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
+        if dropout:
+            fc.append(nn.Dropout(0.25))
+                
+        fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
+        if dropout:
+            fc.append(nn.Dropout(0.25))
+#######################
         if gate:
             attention_net = Attn_Net_Gated(L = size[1], D = size[2], dropout = dropout, n_classes = 1)
         else:

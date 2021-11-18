@@ -50,6 +50,7 @@ parser.add_argument('--freeze_batchnorm_off',action='store_false',dest='freeze_b
 parser.add_argument('--freeze_CNN_model',action='store_true')
 parser.add_argument('--freeze_CNN_model_off',dest = 'freeze_CNN_model',action='store_false')
 parser.add_argument('--pooling', type=str, default='attention', help='aggregation method of model, choose from mean, attention, max')
+parser.add_argument('--model_name', type=str, default='', help='name for the model')
 
 def main():
     #-------Environment
@@ -59,7 +60,7 @@ def main():
     #os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
     device0 = torch.device("cuda:0")
     device1 = torch.device("cuda:1")
-    result_path = os.path.join(args.result_dir, str(datetime.datetime.now())[0:19])
+    result_path = os.path.join(args.result_dir, args.model_name)
     print('the result dir is: ', result_path)
     os.makedirs(result_path)
     if args.pretrain=='imagenet':
