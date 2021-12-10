@@ -32,7 +32,7 @@ PTEN = pd.DataFrame({'label':clinical['label'], 'PatientID':clinical['patient_id
 PTEN['PatientID'] =  [i.replace('.', '-') for i in PTEN['PatientID']]
 ################################################
 ## Get the paths for the tiled WSIs
-tile_dir = r'/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_karen/10x/'
+tile_dir = r'/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_karen/20x/'
 tiles = listdir(tile_dir)
 
 # path for each slide folder
@@ -67,5 +67,5 @@ print(pd.crosstab(MetaData_training['Train_Test'], MetaData_training['label']))
 print(MetaData_training.columns)
 
 # Save to disk
-MetaData_training.to_csv('objs/karen/MetaData_training_pten_10x.csv')
+MetaData_training.to_csv('objs/karen/MetaData_training_pten_20x.csv')
 
