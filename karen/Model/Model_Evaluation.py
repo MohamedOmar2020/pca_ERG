@@ -53,7 +53,7 @@ def get_slide_prediction(model0_path, model1_path, dataframe, key_word='Test',y_
     return tensorlist2array(y_true), tensorlist2array(y_pred), list(path)
 
 
-def get_patch_only_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_word='Train',y_col='IDH'):
+def get_patch_only_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_word='Train',y_col='IDH',patch_n=0):
     
     device0 = torch.device("cuda:0")
     device1 = torch.device("cuda:1")
@@ -71,7 +71,7 @@ def get_patch_only_prediction(model0_path, model1_path, dataframe, row_slice=-1,
             df_test = dataframe[dataframe['Train_Test'] == key_word].reset_index(drop=True)
 
     slide_path = list(df_test['Path'])
-    test_dset = DataLoader_torch.Classification_Generator(df_test, patch_n=0, p=0, y_col=y_col,
+    test_dset = DataLoader_torch.Classification_Generator(df_test, patch_n=patch_n, p=0, y_col=y_col,
                                                           ColorAugmentation=False, spatial_sample=False,
                                                           KeepPath=True)
     test_loader = torch.utils.data.DataLoader(test_dset, batch_size=1, shuffle=False,
@@ -103,7 +103,8 @@ def get_patch_only_prediction(model0_path, model1_path, dataframe, row_slice=-1,
             
             patch_y=patch_y.item()
             patch_att=patch_att.item()
-            patch_x = patch_x.item()
+            print(patch_x)
+            #patch_x = patch_x.item()
             patch_pred_.append(patch_y)
             patch_att_.append(patch_att)
             patch_emb_.append(patch_x)
@@ -117,7 +118,7 @@ def get_patch_only_prediction(model0_path, model1_path, dataframe, row_slice=-1,
     return patch_attention, patch_list, patch_pred, slide_path, patch_embedding
         
         
-def get_patch_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_word='Train',y_col='IDH'):
+def get_patch_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_word='Train',y_col='IDH', patch_n=0):
     '''
     :param model0_path: CNN model
     :param model1_path: Attention Model
@@ -144,7 +145,7 @@ def get_patch_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_
 
     slide_path = list(df_test['Path'])
 
-    test_dset = DataLoader_torch.Classification_Generator(df_test, patch_n=0, p=0, y_col=y_col,
+    test_dset = DataLoader_torch.Classification_Generator(df_test, patch_n=patch_n, p=0, y_col=y_col,
                                                           ColorAugmentation=False, spatial_sample=False,
                                                           KeepPath=True)
     test_loader = torch.utils.data.DataLoader(test_dset, batch_size=1, shuffle=False,
@@ -156,9 +157,11 @@ def get_patch_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_
         y_attention = []
         patch_list = []
         patch_pred = []
+        embed_list = []
 
         for batch_idx, (data, label, path) in enumerate(test_loader):
             patch_pred_=[]
+            embed_list_=[]
             #path is a list cooresponding to 'batch' each dimension of data
             label = label[0].to(device0).float()
             data = data.squeeze(0).float()
@@ -175,6 +178,7 @@ def get_patch_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_
                 patch_x = embed[em_i,...].unsqueeze(dim=0)
                 patch_y,_,_ = model1(patch_x)
                 patch_y=patch_y.item()
+                embed_list_.append(patch_x)
                 patch_pred_.append(patch_y)
 
             pred, yhat, attention = model1(embed)
@@ -189,10 +193,11 @@ def get_patch_prediction(model0_path, model1_path, dataframe, row_slice=-1, key_
             y_attention.append(attention)
             patch_list.append(path)
             patch_pred.append(patch_pred_)
-    return y_true, y_pred, y_attention, patch_list, patch_pred, slide_path
+            embed_list.append(embed_list_)
+    return y_true, y_pred, y_attention, patch_list, patch_pred, slide_path, embed_list
 
 
-def save_model_performance_matrix(Model_Folder, df_path, by='acc',key_word='Test',y_col='IDH'):
+def save_model_performance_matrix(Model_Folder, df_path, by='acc',key_word='Test',y_col='IDH', patch_n=0):
     #set key_word to None when evaluate the whole dataframe
     dataframe = pd.read_csv(df_path)
     file_list = os.listdir(Model_Folder)
@@ -205,7 +210,7 @@ def save_model_performance_matrix(Model_Folder, df_path, by='acc',key_word='Test
     model0_path = os.path.join(Model_Folder, model0_name)
     model1_path = os.path.join(Model_Folder, model1_name)
 
-    y_true, y_pred, _ = get_slide_prediction(model0_path, model1_path, dataframe,key_word=key_word,y_col=y_col)
+    y_true, y_pred, _ = get_slide_prediction(model0_path, model1_path, dataframe,key_word=key_word,y_col=y_col, patch_n=patch_n)
 
     acc = accuracy_score(y_true, np.round(y_pred))
     auc = roc_auc_score(y_true, y_pred)
@@ -217,7 +222,7 @@ def save_model_performance_matrix(Model_Folder, df_path, by='acc',key_word='Test
     fconv.close()
 
 
-def save_patch_prediction_to_dataframe(Model_Folder, df_path, by='loss',row_slice=-1,key_word='Test',y_col='IDH',light_mode=False):
+def save_patch_prediction_to_dataframe(Model_Folder, df_path, by='loss',row_slice=-1,key_word='Test',y_col='IDH',light_mode=False, patch_n=0):
     #set row_slice to -1 and key_word to None to evaluate all dataset or key_word to 
     #set row_slice to specific row number to evaluate subset of dataset regardless of key_word
     dataframe = pd.read_csv(df_path)
@@ -232,9 +237,9 @@ def save_patch_prediction_to_dataframe(Model_Folder, df_path, by='loss',row_slic
     model1_path = os.path.join(Model_Folder, model1_name)
     
     if light_mode:
-        patch_attention, patch_list, patch_pred, slide_path,patch_embedding = get_patch_only_prediction(model0_path, model1_path, dataframe,row_slice=row_slice, key_word=key_word,y_col=y_col)
+        patch_attention, patch_list, patch_pred, slide_path,patch_embedding = get_patch_only_prediction(model0_path, model1_path, dataframe,row_slice=row_slice, key_word=key_word,y_col=y_col, patch_n=patch_n)
         df = pd.DataFrame({'attention_weights': patch_attention, 'patch_name': patch_list, 'patch_pred': patch_pred,'slide_path': slide_path,'patch_embedding': patch_embedding})
     else:
-        y_true, y_pred, y_attention, patch_list, patch_pred, slide_path = get_patch_prediction(model0_path, model1_path, dataframe,row_slice=row_slice, key_word=key_word,y_col=y_col)
-        df = pd.DataFrame({'y_true':y_true, 'y_pred':y_pred, 'attention_weights': y_attention, 'patch_name': patch_list, 'patch_pred': patch_pred,'slide_path': slide_path})
-    return df
+        y_true, y_pred, y_attention, patch_list, patch_pred, slide_path, embed_list = get_patch_prediction(model0_path, model1_path, dataframe,row_slice=row_slice, key_word=key_word,y_col=y_col,patch_n=patch_n)
+        df = pd.DataFrame({'y_true':y_true, 'y_pred':y_pred, 'attention_weights': y_attention, 'patch_name': patch_list, 'patch_pred': patch_pred,'slide_path': slide_path, 'embed_list':embed_list})
+
