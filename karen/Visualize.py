@@ -47,7 +47,7 @@ def main():
         np.save(target_path,filter_map)
         #read slides
         slide = openslide.open_slide(args.svs_path)
-        slide = np.array(slide.read_region((0,0), 2, slide.level_dimensions[2]))[:, :, :3]
+        slide = np.array(slide.read_region((0,0), 0, slide.level_dimensions[0]))[:, :, :3]
         target_shape = (slide.shape[0],slide.shape[1])
         #same size
         prediction_map = resize(prediction_map,target_shape,anti_aliasing=True)

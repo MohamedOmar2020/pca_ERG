@@ -22,7 +22,9 @@ MetaData['slides'] = MetaData.index
 
 # Add the patient ID
 MetaData['PatientID'] =  MetaData['slides']
-MetaData['PatientID'] = MetaData['PatientID'].str.replace('.ndpi', '')  
+MetaData['PatientID'] = MetaData['PatientID'].str.replace('.ndpi', '')
+#MetaData['PatientID'] = MetaData['PatientID'].astype('str') 
+
 
 # Add the index
 MetaData.index = np.linspace(0, MetaData.shape[0]-1, num= MetaData.shape[0]).astype('int')

@@ -3,7 +3,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
-#SBATCH --job-name=visPTEN
+#SBATCH --job-name=jup
 #SBATCH --time=2-00:00:00
 #SBATCH --mem=350G
 #SBATCH --gres=gpu:2
