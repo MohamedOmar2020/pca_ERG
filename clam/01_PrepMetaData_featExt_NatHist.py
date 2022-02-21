@@ -11,17 +11,17 @@ from sklearn.model_selection import train_test_split
 ## Metadata for training
 
 # Read original csv file
-orig = pd.read_csv('data/tiles_clam_256_new/process_list_autogen.csv')
+orig = pd.read_csv('data/tiles_clam_256_NatHist/process_list_autogen.csv')
 
 
 # Remove the .svs extension
-orig['slide_id'] = orig['slide_id'].str.replace('.svs','')
+orig['slide_id'] = orig['slide_id'].str.replace('.ndpi','')
 orig['slide_id'] = orig['slide_id'].astype(str)
 print(orig.columns)
 print(orig)
 
 # Save to disk
-orig.to_csv('data/tiles_clam_256_new/process_list_autogen_featExt.csv')
+orig.to_csv('data/tiles_clam_256_NatHist/process_list_autogen_featExt.csv')
 
 
 

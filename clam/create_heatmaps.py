@@ -275,7 +275,7 @@ if __name__ == '__main__':
 		block_map_save_path = os.path.join(r_slide_save_dir, '{}_blockmap.h5'.format(slide_id))
 		mask_path = os.path.join(r_slide_save_dir, '{}_mask.jpg'.format(slide_id))
 		if vis_params['vis_level'] < 0:
-			best_level = wsi_object.wsi.get_best_level_for_downsample(32)
+			best_level = wsi_object.wsi.get_best_level_for_downsample(64)
 			vis_params['vis_level'] = best_level
 		mask = wsi_object.visWSI(**vis_params, number_contours=True)
 		mask.save(mask_path)
@@ -345,7 +345,7 @@ if __name__ == '__main__':
 				for idx, (s_coord, s_score) in enumerate(zip(sample_results['sampled_coords'], sample_results['sampled_scores'])):
 					print('coord: {} score: {:.3f}'.format(s_coord, s_score))
 					patch = wsi_object.wsi.read_region(tuple(s_coord), patch_args.patch_level, (patch_args.patch_size, patch_args.patch_size)).convert('RGB')
-					patch.save(os.path.join(sample_save_dir, '{}_{}_x_{}_y_{}_a_{:.3f}.png'.format(idx, slide_id, s_coord[0], s_coord[1], s_score)))
+					patch.save(os.path.join(sample_save_dir, '{}_{}_x_{}_y_{}_a_{:.3f}.tiff'.format(idx, slide_id, s_coord[0], s_coord[1], s_score)))
 
 		wsi_kwargs = {'top_left': top_left, 'bot_right': bot_right, 'patch_size': patch_size, 'step_size': step_size, 
 		'custom_downsample':patch_args.custom_downsample, 'level': patch_args.patch_level, 'use_center_shift': heatmap_args.use_center_shift}
@@ -357,7 +357,7 @@ if __name__ == '__main__':
 			heatmap = drawHeatmap(scores, coords, slide_path, wsi_object=wsi_object, cmap=heatmap_args.cmap, alpha=heatmap_args.alpha, use_holes=True, binarize=False, vis_level=-1, blank_canvas=False,
 							thresh=-1, patch_size = vis_patch_size, convert_to_percentiles=True)
 		
-			heatmap.save(os.path.join(r_slide_save_dir, '{}_blockmap.png'.format(slide_id)))
+			heatmap.save(os.path.join(r_slide_save_dir, '{}_blockmap.tiff'.format(slide_id)))
 			del heatmap
 
 		save_path = os.path.join(r_slide_save_dir, '{}_{}_roi_{}.h5'.format(slide_id, patch_args.overlap, heatmap_args.use_roi))
@@ -409,8 +409,8 @@ if __name__ == '__main__':
 						  		  thresh=heatmap_args.binary_thresh,  patch_size = vis_patch_size,
 						  		  overlap=patch_args.overlap, 
 						  		  top_left=top_left, bot_right = bot_right)
-			if heatmap_args.save_ext == 'jpg':
-				heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name), quality=100)
+			if heatmap_args.save_ext == 'tiff':
+				heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name), quality=600)
 			else:
 				heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name))
 		
@@ -424,8 +424,8 @@ if __name__ == '__main__':
 				pass
 			else:
 				heatmap = wsi_object.visWSI(vis_level=vis_level, view_slide_only=True, custom_downsample=heatmap_args.custom_downsample)
-				if heatmap_args.save_ext == 'jpg':
-					heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name), quality=100)
+				if heatmap_args.save_ext == 'tiff':
+					heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name), quality=600)
 				else:
 					heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name))
 

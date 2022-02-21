@@ -18,11 +18,12 @@ class Attn_Net(nn.Module):
         super(Attn_Net, self).__init__()
         self.module = [
             nn.Linear(L, D),
-            nn.Tanh()]
+            nn.Tanh()
+            ]
 
         if dropout:
             self.module.append(nn.Dropout(0.25))
-
+        
         self.module.append(nn.Linear(D, n_classes))
         
         self.module = nn.Sequential(*self.module)
@@ -43,17 +44,20 @@ class Attn_Net_Gated(nn.Module):
         super(Attn_Net_Gated, self).__init__()
         self.attention_a = [
             nn.Linear(L, D),
-            nn.Tanh()]
+            nn.Tanh()
+            ]
         
         self.attention_b = [nn.Linear(L, D),
-                            nn.Sigmoid()]
+                            nn.Sigmoid()
+                          ]
+
         if dropout:
             self.attention_a.append(nn.Dropout(0.25))
             self.attention_b.append(nn.Dropout(0.25))
 
         self.attention_a = nn.Sequential(*self.attention_a)
         self.attention_b = nn.Sequential(*self.attention_b)
-        
+
         self.attention_c = nn.Linear(D, n_classes)
 
     def forward(self, x):
@@ -85,26 +89,24 @@ class CLAM_SB(nn.Module):
             fc.append(nn.Dropout(0.25))
         
         ## Add more layers?
-        fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
-        if dropout:
-           fc.append(nn.Dropout(0.25))
+        #fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
+        #if dropout:
+        #   fc.append(nn.Dropout(0.25))
+        
+        #fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
+        #if dropout:
+        #    fc.append(nn.Dropout(0.25))
 
-        fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
-        if dropout:
-            fc.append(nn.Dropout(0.25))
-                
-        fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
-        if dropout:
-            fc.append(nn.Dropout(0.25))
-
-#######################
+############################
         if gate:
             attention_net = Attn_Net_Gated(L = size[1], D = size[2], dropout = dropout, n_classes = 1)
         else:
             attention_net = Attn_Net(L = size[1], D = size[2], dropout = dropout, n_classes = 1)
         fc.append(attention_net)
+
         self.attention_net = nn.Sequential(*fc)
         self.classifiers = nn.Linear(size[1], n_classes)
+        
         instance_classifiers = [nn.Linear(size[1], 2) for i in range(n_classes)]
         self.instance_classifiers = nn.ModuleList(instance_classifiers)
         self.k_sample = k_sample

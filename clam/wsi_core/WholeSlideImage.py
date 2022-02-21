@@ -518,7 +518,7 @@ class WholeSlideImage(object):
         """
 
         if vis_level < 0:
-            vis_level = self.wsi.get_best_level_for_downsample(32)
+            vis_level = self.wsi.get_best_level_for_downsample(64)
 
         downsample = self.level_downsamples[vis_level]
         scale = [1/downsample[0], 1/downsample[1]] # Scaling from 0 to desired level
