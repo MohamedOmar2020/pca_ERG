@@ -41,7 +41,7 @@ parser.add_argument('--fold', type=int, default=-1, help='single fold to evaluat
 parser.add_argument('--micro_average', action='store_true', default=False, 
                     help='use micro_average instead of macro_avearge for multiclass AUC')
 parser.add_argument('--split', type=str, choices=['train', 'val', 'test', 'all'], default='test')
-parser.add_argument('--task', type=str, choices=['task_2_tumor_subtyping', 'pca_resTumor', 'pca_BCR', 'pca_ARv7', 'pca_SPOP', 'pca_TP53', 'pca_ETV1', 'pca_ETV4', 'pca_ERG', 'pca_gleason', 'pca_pten'])
+parser.add_argument('--task', type=str, choices=['pca_ERG', 'pca_ERG_NatHist', 'pca_pten', 'pca_pten_NatHist'])
 args = parser.parse_args()
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -70,15 +70,6 @@ with open(args.save_dir + '/eval_experiment_{}.txt'.format(args.save_exp_code), 
 f.close()
 
 print(settings)
-#if args.task == 'task_1_tumor_vs_normal':
-#    args.n_classes=2
-#    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/tumor_vs_normal_dummy_clean.csv',
-#                            data_dir= os.path.join(args.data_root_dir, 'tumor_vs_normal_resnet_features'),
-#                            shuffle = False, 
-#                            print_info = True,
-#                            label_dict = {'normal_tissue':0, 'tumor_tissue':1},
-#                            patient_strat=False,
-#                            ignore=[])
 
 #if args.task == 'pca_gleason':
 #    args.n_classes=2
@@ -91,47 +82,27 @@ print(settings)
 #                            label_col = 'Gleason',
 #                            ignore=[])
 
-#if args.task == 'pca_pten':
-#    args.n_classes=2
-#    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten.csv',
-#                            data_dir= args.data_root_dir,
-#                            shuffle = False,
-#                            print_info = True,
-#                            label_dict = {'neg':0, 'pos':1},
-#                            patient_strat=False,
-#                            label_col = 'pten_status',
-#                            ignore=[])
-
-if args.task == 'pca_TP53':
+if args.task == 'pca_ERG_NatHist':
     args.n_classes=2
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_TP53.csv',
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ERG_NatHist.csv',
                             data_dir= args.data_root_dir,
                             shuffle = False,
                             print_info = True,
-                            label_dict = {0:0, 1:1},
+                            label_dict = {'wt':0, 'fusion':1},
                             patient_strat=False,
                             label_col = 'label',
                             ignore=[])
 
-elif args.task == 'task_2_tumor_subtyping':
-    args.n_classes=3
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/tumor_subtyping_dummy_clean.csv',
-                            data_dir= os.path.join(args.data_root_dir, 'tumor_subtyping_resnet_features'),
-                            shuffle = False, 
+elif args.task == 'pca_pten_NatHist':
+    args.n_classes=2
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten_NatHist.csv',
+                            data_dir= args.data_root_dir,
+                            shuffle = False,
                             print_info = True,
-                            label_dict = {'subtype_1':0, 'subtype_2':1, 'subtype_3':2},
-                            patient_strat= False,
+                            label_dict = {'neg':0, 'pos':1},
+                            patient_strat=False,
+                            label_col = 'label',
                             ignore=[])
-
-# elif args.task == 'tcga_kidney_cv':
-#     args.n_classes=3
-#     dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/tcga_kidney_clean.csv',
-#                             data_dir= os.path.join(args.data_root_dir, 'tcga_kidney_20x_features'),
-#                             shuffle = False, 
-#                             print_info = True,
-#                             label_dict = {'TCGA-KICH':0, 'TCGA-KIRC':1, 'TCGA-KIRP':2},
-#                             patient_strat= False,
-#                             ignore=['TCGA-SARC'])
 
 else:
     raise NotImplementedError

@@ -13,6 +13,6 @@ source ~/.bashrc
 conda activate /home/mao4005/.conda/envs/clam
 #python code/ImageProcessing.py
 
-python clam/create_patches_fp.py --source data/NatHistory --save_dir data/tiles_clam_256_NatHist --patch_size 256 --seg --patch --stitch --preset pca_NatHist.csv 
+python clam/create_patches_fp.py --source data/NatHistory --save_dir data/tiles_clam_512_NatHist --patch_size 512 --seg --patch --stitch --preset pca_NatHist.csv 
 
 
