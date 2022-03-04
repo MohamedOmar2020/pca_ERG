@@ -12,7 +12,7 @@ parser.add_argument('--seed', type=int, default=1,
                     help='random seed (default: 1)')
 parser.add_argument('--k', type=int, default=10,
                     help='number of splits (default: 10)')
-parser.add_argument('--task', type=str, choices=['task_2_tumor_subtyping', 'pca_resTumor', 'pca_BCR', 'pca_ARv7', 'pca_TP53', 'pca_SPOP', 'pca_ETV1', 'pca_ETV4', 'pca_ERG', 'pca_pten', 'pca_gleason'])
+parser.add_argument('--task', type=str, choices=['pca_ETV1', 'pca_ETV4', 'pca_ERG', 'pca_ERG_NatHist', 'pca_pten', 'pca_pten_NatHist'])
 parser.add_argument('--val_frac', type=float, default= 0.1,
                     help='fraction of labels for validation (default: 0.1)')
 parser.add_argument('--test_frac', type=float, default= 0.1,
@@ -42,26 +42,25 @@ args = parser.parse_args()
 #                            label_col = 'pten_status',
 #                            ignore=[])
 
-if args.task == 'pca_ARv7':
+if args.task == 'pca_ERG_NatHist':
     args.n_classes=2
-    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/pca_ARv7.csv',
+    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/pca_ERG_NatHist.csv',
                             shuffle = False,
                             seed = args.seed,
                             print_info = True,
-                            label_dict = {0:0, 1:1},
+                            label_dict = {'wt':0, 'fusion':1},
                             patient_strat=False,
                             label_col = 'label',
                             ignore=[])
 
-elif args.task == 'task_2_tumor_subtyping':
+elif args.task == 'pca_pten_NatHist':
     args.n_classes=3
-    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/tumor_subtyping_dummy_clean.csv',
+    dataset = Generic_WSI_Classification_Dataset(csv_path = 'dataset_csv/pca_pten_NatHist.csv',
                             shuffle = False, 
                             seed = args.seed, 
                             print_info = True,
-                            label_dict = {'subtype_1':0, 'subtype_2':1, 'subtype_3':2},
-                            patient_strat= True,
-                            patient_voting='maj',
+                            label_dict = {'neg':0, 'pos':1},
+                            patient_strat= False,
                             ignore=[])
 
 else:

@@ -47,11 +47,11 @@ MetaData_clam = pd.merge(MetaData_clam, ERG, left_on='case_id', right_on='case_i
 MetaData_clam = MetaData_clam.dropna()
 
 # subset to the ones with feature extraction
-filt = listdir('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/features_clam_256_NatHist/h5_files')
-filt = pd.DataFrame({'slide_id': filt})
-filt['slide_id'] = filt['slide_id'].str.replace('.h5','')
+#filt = listdir('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/features_clam_256_NatHist/h5_files')
+#filt = pd.DataFrame({'slide_id': filt})
+#filt['slide_id'] = filt['slide_id'].str.replace('.h5','')
 
-MetaData_clam = MetaData_clam.loc[MetaData_clam['slide_id'].isin(filt['slide_id']),:]
+#MetaData_clam = MetaData_clam.loc[MetaData_clam['slide_id'].isin(filt['slide_id']),:]
 
 # print the slides/patients
 print(MetaData_clam['label'].value_counts())
