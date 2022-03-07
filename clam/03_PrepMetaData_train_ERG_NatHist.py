@@ -29,7 +29,7 @@ ERG = pd.DataFrame({'label':metadata['label'], 'case_id':metadata['slide_id']})
 
 #################################
 ## Get the IDs for the WSIs and patients
-slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_256_NatHist/patches'
+slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_512_NatHist_lvl2/patches'
 slides = listdir(slide_dir)
 
 # make a dataframe: slide_id: slide ID! // case_id: patient ID
