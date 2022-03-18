@@ -13,4 +13,4 @@ source ~/.bashrc
 conda activate /home/mao4005/.conda/envs/pathml
 #python code/ImageProcessing.py
 
-python3 karen/Evaluation.py --df_path 'objs/karen/MetaData_training_ERG_NatHist_10x_test.csv' --y_col='label' --Model_Folder 'objs/karen/model_ERG/ERG_20x_att_A16_patch200' --key_word 'Test' --no_age --two_forward_off --action 'summary'
+python3 karen/Evaluation.py --df_path 'objs/karen/MetaData_training_ERG_NatHist_5x_test.csv' --y_col='label' --Model_Folder 'objs/karen/model_ERG/ERG_20x_att_A16_patch200' --key_word 'Test' --no_age --two_forward_off --action 'summary'

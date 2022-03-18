@@ -33,7 +33,7 @@ print(ERG['PatientID'])
 
 ################################################
 ## Get the paths for the tiled WSIs
-tile_dir = r'/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_karen_NatHist/10x/'
+tile_dir = r'/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_karen_NatHist/5x/'
 tiles = listdir(tile_dir)
 
 # path for each slide folder
@@ -63,5 +63,5 @@ print(pd.crosstab(MetaData_training['Train_Test'], MetaData_training['label']))
 print(MetaData_training.shape)
 
 # Save to disk
-MetaData_training.to_csv('objs/karen/MetaData_training_ERG_NatHist_10x_test.csv')
+MetaData_training.to_csv('objs/karen/MetaData_training_ERG_NatHist_5x_test.csv')
 
