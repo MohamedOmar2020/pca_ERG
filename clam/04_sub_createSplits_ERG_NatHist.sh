@@ -13,5 +13,5 @@
 source ~/.bashrc
 conda activate /home/mao4005/.conda/envs/clam
 
-python clam/create_splits_seq.py --task pca_ERG_NatHist --seed 1 --label_frac 0.7 --k 10 --val_frac 0.1 --test_frac 0.1
+python clam/create_splits_seq.py --task pca_ERG_NatHist --seed 1 --label_frac 1.0 --k 10 --val_frac 0.15 --test_frac 0.15
 

@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 ## Metadata for training
 
 # Read original csv file
-orig = pd.read_csv('data/tiles_clam_256_NatHist_lvl1/process_list_autogen.csv')
+orig = pd.read_csv('data/tiles_clam_512_NatHist_lvl0_new/process_list_autogen.csv')
 
 
 # Remove the .svs extension
@@ -21,7 +21,7 @@ print(orig.columns)
 print(orig)
 
 # Save to disk
-orig.to_csv('data/tiles_clam_256_NatHist_lvl1/process_list_autogen_featExt.csv')
+orig.to_csv('data/tiles_clam_512_NatHist_lvl0_new/process_list_autogen_featExt.csv')
 
 
 
