@@ -2,10 +2,10 @@
 #SBATCH --partition=scu-gpu
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=20
-#SBATCH --job-name=heatmapPTEN
+#SBATCH --cpus-per-task=30
+#SBATCH --job-name=AttmapPTEN
 #SBATCH --time=2-00:00:00
-#SBATCH --mem=128G
+#SBATCH --mem=350G
 #SBATCH --gres=gpu:2
 
 source ~/.bashrc
