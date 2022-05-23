@@ -31,7 +31,7 @@ ERG['case_id'] =  [i.replace('.', '-') for i in ERG['case_id']]
 
 #################################
 ## Get the IDs for the WSIs and patients
-slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_256/patches'
+slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_512/patches'
 slides = listdir(slide_dir)
 
 # make a dataframe: slide_id: slide ID! // case_id: patient ID
@@ -50,4 +50,4 @@ print(MetaData_clam['label'].value_counts())
 print(MetaData_clam)
 
 # Save to disk
-MetaData_clam.to_csv('dataset_csv/pca_ERG.csv')
+MetaData_clam.to_csv('dataset_csv/pca_ERG_TCGA.csv')

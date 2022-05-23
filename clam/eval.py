@@ -41,7 +41,7 @@ parser.add_argument('--fold', type=int, default=-1, help='single fold to evaluat
 parser.add_argument('--micro_average', action='store_true', default=False, 
                     help='use micro_average instead of macro_avearge for multiclass AUC')
 parser.add_argument('--split', type=str, choices=['train', 'val', 'test', 'all'], default='test')
-parser.add_argument('--task', type=str, choices=['pca_ERG', 'pca_ERG_NatHist', 'pca_pten', 'pca_pten_NatHist'])
+parser.add_argument('--task', type=str, choices=['pca_ERG_TCGA', 'pca_ERG_NatHist', 'pca_pten_TCGA', 'pca_pten_NatHist'])
 args = parser.parse_args()
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -93,13 +93,13 @@ if args.task == 'pca_ERG_NatHist':
                             label_col = 'label',
                             ignore=[])
 
-elif args.task == 'pca_pten_NatHist':
+elif args.task == 'pca_ERG_TCGA':
     args.n_classes=2
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten_NatHist.csv',
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ERG_TCGA.csv',
                             data_dir= args.data_root_dir,
                             shuffle = False,
                             print_info = True,
-                            label_dict = {'neg':0, 'pos':1},
+                            label_dict = {'wt':0, 'fusion':1},
                             patient_strat=False,
                             label_col = 'label',
                             ignore=[])
