@@ -12,7 +12,7 @@ library(patchwork)
 
 #########################
 ## ERG performance on the testing data
-summary_ERG <- read_csv("/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/eval_results/EVAL_pca_ERG_512_s1/summary.csv")
+summary_ERG <- read_csv("/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/eval_results/EVAL_pca_ERG_512_NatHist_MBsmall_B32SVM_lvl0new_s1/summary.csv")
 mean(summary_ERG$test_auc)
 mean(summary_ERG$test_acc)
 
@@ -43,7 +43,7 @@ mean(summary_SPOP$test_acc)
 
 #########################################################################################
 ## load the metrics of each testing fold: ERG
-temp_ERG = list.files(path = "/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/eval_results/EVAL_pca_ERG_512_s1/", pattern="*.csv", full.names = T)
+temp_ERG = list.files(path = "/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/eval_results/EVAL_pca_ERG_512_NatHist_MBsmall_B32SVM_lvl0new_s1/", pattern="*.csv", full.names = T)
 temp_ERG = temp_ERG[-grep('summary.csv', temp_ERG)]
 
 folds_ERG = lapply(temp_ERG, read.delim, sep = ',')
@@ -79,7 +79,7 @@ perf_ERG <- lapply(folds_ERG, function(x){
   
   ####
   # change threshold 
-  pred <- as.numeric(x$p_1 > 0.25)
+  pred <- as.numeric(x$p_1 > 0.4)
   pred <- factor(pred, levels = c(0,1))
   
   ####

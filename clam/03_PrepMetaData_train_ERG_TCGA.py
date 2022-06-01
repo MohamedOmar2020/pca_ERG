@@ -1,4 +1,5 @@
 
+import glob
 import re
 import numpy as np
 import pandas as pd
@@ -10,11 +11,8 @@ import torchvision.models
 from sklearn.model_selection import train_test_split
 
 ######################################################
-######################################################
-## Metadata for CLAM training
-
-# Read the TCGA metadata
-metadata = pd.read_csv('data/tcga_meta_data_all.csv')
+# Read labels from Karen
+metadata = pd.read_csv('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tcga_meta_data_all.csv')
 
 metadata['label'] = metadata['ERGstatus']
 metadata['label'].value_counts()
@@ -23,7 +21,10 @@ metadata['label'].value_counts()
 metadata['label'].replace('ERG NEGATIVE', 'wt', inplace=True)
 metadata['label'].replace('ERG POSITIVE', 'fusion', inplace=True)
 
-## Extract the important clinical labels eg. Gleason grade
+#metadata.dropna(subset = ['label'], inplace = True)
+#metadata = metadata[metadata.label != 'n']
+
+## Extract the important clinical label: ERG
 ERG = pd.DataFrame({'label':metadata['label'], 'case_id':metadata['patient_id']})
 
 # replace the '.' with '-'
@@ -31,23 +32,47 @@ ERG['case_id'] =  [i.replace('.', '-') for i in ERG['case_id']]
 
 #################################
 ## Get the IDs for the WSIs and patients
-slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_512/patches'
+slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_512_TCGA_lvl0_new/patches'
 slides = listdir(slide_dir)
+
+
 
 # make a dataframe: slide_id: slide ID! // case_id: patient ID
 MetaData_clam = pd.DataFrame({'slide_id': slides})
+
 MetaData_clam['case_id'] =  [i.replace(i, '-'.join(i.split("-")[0:3])) for i in MetaData_clam['slide_id']]
+
+print(MetaData_clam['case_id'].value_counts())
+print(MetaData_clam['slide_id'].value_counts())
 
 # Remove the .h5 extension from the slide_id
 MetaData_clam['slide_id'] = MetaData_clam['slide_id'].str.replace('.h5','')
+#MetaData_clam['case_id'] = MetaData_clam['case_id'].str.replace('.h5','')
+
 
 ## Add labels
 MetaData_clam = pd.merge(MetaData_clam, ERG, left_on='case_id', right_on='case_id')
 MetaData_clam = MetaData_clam.dropna()
 
+# subset to the ones with feature extraction
+#filt = listdir('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/features_clam_256_NatHist/h5_files')
+#filt = pd.DataFrame({'slide_id': filt})
+#filt['slide_id'] = filt['slide_id'].str.replace('.h5','')
+
+#MetaData_clam = MetaData_clam.loc[MetaData_clam['slide_id'].isin(filt['slide_id']),:]
+
+MetaData_clam = MetaData_clam.drop_duplicates()
 # print the slides/patients
 print(MetaData_clam['label'].value_counts())
-print(MetaData_clam)
+print(MetaData_clam['case_id'].value_counts())
+print(MetaData_clam['slide_id'].value_counts())
+print(MetaData_clam.shape)
+
+
 
 # Save to disk
 MetaData_clam.to_csv('dataset_csv/pca_ERG_TCGA.csv')
+
+
+
+
