@@ -93,6 +93,28 @@ if args.task == 'pca_ERG_NatHist':
                             label_col = 'label',
                             ignore=[])
 
+elif args.task == 'pca_pten_NatHist':
+    args.n_classes=2
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten_NatHist.csv',
+                            data_dir= args.data_root_dir,
+                            shuffle = False,
+                            print_info = True,
+                            label_dict = {'neg':0, 'pos':1},
+                            patient_strat=False,
+                            label_col = 'label',
+                            ignore=[])
+
+elif args.task == 'pca_pten_TCGA':
+    args.n_classes=2
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten_TCGA.csv',
+                            data_dir= args.data_root_dir,
+                            shuffle = False,
+                            print_info = True,
+                            label_dict = {'neg':0, 'pos':1},
+                            patient_strat=False,
+                            label_col = 'label',
+                            ignore=[])
+
 elif args.task == 'pca_ERG_TCGA':
     args.n_classes=2
     dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ERG_TCGA.csv',
