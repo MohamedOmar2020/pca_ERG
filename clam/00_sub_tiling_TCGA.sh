@@ -13,6 +13,6 @@ source ~/.bashrc
 conda activate /home/mao4005/.conda/envs/clam
 #python code/ImageProcessing.py
 
-python clam/create_patches_fp.py --source data/TCGA_FFPE --save_dir data/tiles_clam_256_TCGA_lvl0_new --patch_size 256 --step_size 256 --patch_level 0 --seg --patch --stitch --preset pca_TCGA.csv 
+python clam/create_patches_fp.py --source data/TCGA_FFPE --save_dir data/tiles_clam_512_TCGA_lvl1_new --patch_size 512 --step_size 512 --patch_level 1 --seg --patch --stitch --preset pca_TCGA.csv 
 
 
