@@ -32,7 +32,7 @@ ERG['case_id'] =  [i.replace('.', '-') for i in ERG['case_id']]
 
 #################################
 ## Get the IDs for the WSIs and patients
-slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_512_TCGA_lvl0_new/patches'
+slide_dir = '/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tiles_clam_2048_TCGA_lvl0/patches'
 slides = listdir(slide_dir)
 
 
