@@ -71,17 +71,6 @@ f.close()
 
 print(settings)
 
-#if args.task == 'pca_gleason':
-#    args.n_classes=2
-#    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_gleason.csv',
-#                            data_dir= args.data_root_dir,
-#                            shuffle = False,
-#                            print_info = True,
-#                            label_dict = {'low':0, 'high':1},
-#                            patient_strat=False,
-#                            label_col = 'Gleason',
-#                            ignore=[])
-
 if args.task == 'pca_ERG_NatHist':
     args.n_classes=2
     dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ERG_NatHist.csv',

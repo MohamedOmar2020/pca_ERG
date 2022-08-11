@@ -12,16 +12,19 @@ from sklearn.model_selection import train_test_split
 
 ######################################################
 # Read labels from Karen
-metadata = pd.read_csv('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/NatHistPheno.csv')
+metadata = pd.read_csv('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/natHist_IHCdata2.csv')
+
+metadata = metadata.loc[~metadata['PTEN_LOSS'].isin(['a', 'n'])]
 
 metadata['label'] = metadata['PTEN_LOSS']
-metadata['label'].value_counts()
+
 
 # rename
-metadata['label'].replace('PTEN_NEGATIVE', 'neg', inplace=True)
-metadata['label'].replace('PTEN_POSITIVE', 'pos', inplace=True)
+metadata['label'].replace('2', 'neg', inplace=True)
+metadata['label'].replace(['0', '1'], 'pos', inplace=True)
 
 metadata.dropna(subset = ['label'], inplace = True)
+print(metadata['label'].value_counts())
 
 ## Extract the important clinical label: ERG
 pten = pd.DataFrame({'label':metadata['label'], 'case_id':metadata['slide_id']})

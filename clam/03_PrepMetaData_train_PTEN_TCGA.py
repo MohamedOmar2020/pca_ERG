@@ -12,21 +12,26 @@ from sklearn.model_selection import train_test_split
 
 ######################################################
 # Read labels from Karen
+#metadata = pd.read_excel('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/MolTaxPCA_annot.xls')
 metadata = pd.read_csv('/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/data/tcga_meta_data_all.csv')
 
+
+#metadata['label'] = metadata['PTEN_CNA']
 metadata['label'] = metadata['PTENstatus']
-metadata['label'].value_counts()
+
 
 # rename
-metadata['label'].replace('PTEN POSITIVE', 'pos', inplace=True)
 metadata['label'].replace('PTEN NEGATIVE', 'neg', inplace=True)
+metadata['label'].replace('PTEN POSITIVE', 'pos', inplace=True)
+#metadata['label'].replace('homdel', 'neg', inplace=True)
+#metadata['label'].replace(['diploid', 'hetloss'], 'pos', inplace=True)
 
 #metadata.dropna(subset = ['label'], inplace = True)
 #metadata = metadata[metadata.label != 'n']
 
 ## Extract the important clinical label: ERG
 pten = pd.DataFrame({'label':metadata['label'], 'case_id':metadata['patient_id']})
-
+#pten = pd.DataFrame({'label':metadata['label'], 'case_id':metadata['PATIENT_ID']})
 # replace the '.' with '-'
 pten['case_id'] =  [i.replace('.', '-') for i in pten['case_id']]
 
@@ -63,8 +68,8 @@ MetaData_clam = MetaData_clam.drop_duplicates()
 # print the slides/patients
 print(MetaData_clam['label'].value_counts())
 print(MetaData_clam['case_id'].value_counts())
-print(MetaData_clam['slide_id'].value_counts())
-print(MetaData_clam.shape)
+#print(MetaData_clam['slide_id'].value_counts())
+#print(MetaData_clam.shape)
 
 
 

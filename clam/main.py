@@ -97,7 +97,7 @@ parser.add_argument('--model_type', type=str, choices=['clam_sb', 'clam_mb', 'mi
 parser.add_argument('--exp_code', type=str, help='experiment code for saving results')
 parser.add_argument('--weighted_sample', action='store_true', default=False, help='enable weighted sampling')
 parser.add_argument('--model_size', type=str, choices=['small', 'big'], default='small', help='size of model, does not affect mil')
-parser.add_argument('--task', type=str, choices=['pca_ETV1', 'pca_ETV4', 'pca_ERG', 'pca_ERG_NatHist', 'pca_pten', 'pca_pten_NatHist'])
+parser.add_argument('--task', type=str, choices=['pca_ERG_TCGA', 'pca_ERG_NatHist', 'pca_pten_TCGA', 'pca_pten_NatHist'])
 ### CLAM specific options
 parser.add_argument('--no_inst_cluster', action='store_true', default=False,
                      help='disable instance-level clustering')
@@ -152,9 +152,9 @@ if args.model_type in ['clam_sb', 'clam_mb']:
 print('\nLoad Dataset')
 
 
-if args.task == 'pca_ERG_NatHist':
+if args.task == 'pca_ERG_TCGA':
     args.n_classes=2
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ERG_NatHist.csv',
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_ERG_TCGA.csv',
                             data_dir= args.data_root_dir,
                             shuffle = False,
                             seed = args.seed,
@@ -164,9 +164,9 @@ if args.task == 'pca_ERG_NatHist':
                             label_col = 'label',
                             ignore=[])
 
-elif args.task == 'pca_pten_NatHist':
+elif args.task == 'pca_pten_TCGA':
     args.n_classes=2
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten_NatHist.csv',
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/pca_pten_TCGA.csv',
                             data_dir= args.data_root_dir,
                             shuffle = False,
                             seed = args.seed,

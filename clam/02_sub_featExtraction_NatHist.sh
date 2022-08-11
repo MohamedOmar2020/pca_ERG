@@ -2,7 +2,7 @@
 #SBATCH --partition=scu-gpu
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=20
+#SBATCH --cpus-per-task=30
 #SBATCH --job-name=featExtNatHist
 #SBATCH --time=2-00:00:00
 #SBATCH --mem=350G
@@ -18,5 +18,5 @@ conda activate /home/mao4005/.conda/envs/clam
 
 # tiles from the nat history cohort were extracted from level 0 (40x) and have a size of 2048*2048 pixels. Here we do the feature extraction with custom downsample of 4 so the training will be done on patches of 512*512 pixels extracted from 10x magnification
 
-CUDA_VISIBLE_DEVICES=0,1 python clam/extract_features_fp.py --data_h5_dir data/tiles_clam_512_NatHist_lvl0 --data_slide_dir data/NatHistory --csv_path data/tiles_clam_512_NatHist_lvl0/process_list_autogen_featExt.csv --feat_dir data/features_clam_NatHist_size512_mag40x --batch_size 512 --slide_ext .ndpi --custom_downsample 1
+CUDA_VISIBLE_DEVICES=0,1 python clam/extract_features_fp.py --data_h5_dir data/tiles_clam_1024_NatHist_lvl0 --data_slide_dir data/NatHistory --csv_path data/tiles_clam_1024_NatHist_lvl0/process_list_autogen_featExt.csv --feat_dir data/features_clam_NatHist_size1024_mag20x --batch_size 512 --slide_ext .ndpi --custom_downsample 2
 

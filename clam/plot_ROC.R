@@ -18,7 +18,7 @@ mean(summary_ERG$test_acc)
 
 #########################
 ## PTEN performance on the testing data
-summary_pten <- read_csv("/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/eval_results/EVAL_pca_pten_128_s1/summary.csv")
+summary_pten <- read_csv("/athena/marchionnilab/scratch/lab_data/Mohamed/pca_outcome/eval_results/EVAL_pca_pten_512_NatHist_mbSmall_B32CE_lvl0new_s1/summary.csv")
 mean(summary_pten$test_auc)
 mean(summary_pten$test_acc)
 

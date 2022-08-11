@@ -13,4 +13,4 @@ source ~/.bashrc
 conda activate /home/mao4005/.conda/envs/clam
 #python code/ImageProcessing.py
 
-CUDA_VISIBLE_DEVICES=0 python clam/eval.py --drop_out --k 10 --models_exp_code pca_pten_512_NatHist_mbSmall_B32CE_lvl0new_s1 --save_exp_code pca_pten_512_NatHist_mbSmall_B32CE_lvl0new_s1 --task pca_pten_NatHist --model_type clam_mb --results_dir objs/clam/training_results --data_root_dir data/features_clam_512_NatHist_lvl0_new --model_size small --split 'test'
+CUDA_VISIBLE_DEVICES=0 python clam/eval_mod.py --drop_out --k 10 --models_exp_code pca_pten_512_TCGA_mbBig_B16CE_size512_mag10x_new_s1 --save_exp_code pca_pten_512_TCGA_mbBig_B16CE_size512_mag10x_new_s1_evNathist --task pca_pten_NatHist --model_type clam_mb --results_dir objs/clam/training_results/TCGA/new --data_root_dir data/features_clam_NatHist_size512_mag10x --model_size big --split 'all'
