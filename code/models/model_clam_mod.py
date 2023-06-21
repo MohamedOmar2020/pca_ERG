@@ -211,20 +211,30 @@ class CLAM_MB(CLAM_SB):
     def __init__(self, gate = True, size_arg = "small", dropout = False, k_sample=8, n_classes=2,
         instance_loss_fn=nn.CrossEntropyLoss(), subtyping=False):
         nn.Module.__init__(self)
-        self.size_dict = {"small": [1024, 512, 256], "big": [1024, 512, 384]}
+        self.size_dict = {"small": [1024, 512, 256], "big": [1024, 512, 384, 256]}
         size = self.size_dict[size_arg]
         fc = [nn.Linear(size[0], size[1]), nn.ReLU()]
         if dropout:
-            fc.append(nn.Dropout(0.5))
+            fc.append(nn.Dropout(0.25))
+        
+        ## Add more layers?
+        fc.extend([nn.Linear(size[1], size[1]), nn.ReLU()])
+        if dropout:
+           fc.append(nn.Dropout(0.25))
+
+        fc.extend([nn.Linear(size[1], size[2]), nn.ReLU()])
+        if dropout:
+            fc.append(nn.Dropout(0.25))
+
         if gate:
-            attention_net = Attn_Net_Gated(L = size[1], D = size[2], dropout = dropout, n_classes = n_classes)
+            attention_net = Attn_Net_Gated(L = size[2], D = size[3], dropout = dropout, n_classes = n_classes)
         else:
-            attention_net = Attn_Net(L = size[1], D = size[2], dropout = dropout, n_classes = n_classes)
+            attention_net = Attn_Net(L = size[2], D = size[3], dropout = dropout, n_classes = n_classes)
         fc.append(attention_net)
         self.attention_net = nn.Sequential(*fc)
-        bag_classifiers = [nn.Linear(size[1], 1) for i in range(n_classes)] #use an indepdent linear layer to predict each class
+        bag_classifiers = [nn.Linear(size[2], 1) for i in range(n_classes)] #use an indepdent linear layer to predict each class
         self.classifiers = nn.ModuleList(bag_classifiers)
-        instance_classifiers = [nn.Linear(size[1], 2) for i in range(n_classes)]
+        instance_classifiers = [nn.Linear(size[2], 1) for i in range(n_classes)]
         self.instance_classifiers = nn.ModuleList(instance_classifiers)
         self.k_sample = k_sample
         self.instance_loss_fn = instance_loss_fn
