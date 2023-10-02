@@ -164,7 +164,7 @@ table(natHist_clinical_nuclei$pred)
 ## survival
 #colnames(natHist_clinical_nuclei) <- gsub('_', ' ', colnames(natHist_clinical_nuclei))
 
-CoxData_natHist <- natHist_clinical_nuclei[, c("os", "os_time", "met", "met_time", "lcr", "lcr_time", "pathgs", "pstage", "preop_psa", "age", 'adt', 'rt', 'rp_type', 'bmi',
+CoxData_natHist <- natHist_clinical_nuclei[, c("os", "os_time", "met", "met_time","pathgs", "pstage", "preop_psa", "age", 'adt', 'rt', 'rp_type', 'bmi',
                                          "neoplastic_ratio", "immune_ratio", "stroma_ratio", "necrotic_ratio", "benign_epithelial_ratio", "stroma_neoplastic_ratio", 
                                          'ERG_status', 'pred')]
 
@@ -173,52 +173,39 @@ nuc_ratios <- c("neoplastic_ratio", "immune_ratio", "stroma_ratio", "necrotic_ra
 CutPoint_os <- surv_cutpoint(data = CoxData_natHist, time = "os_time", event = "os", variables = nuc_ratios)
 CutPoint_os
 
-CutPoint_lcr <- surv_cutpoint(data = CoxData_natHist, time = "lcr_time", event = "lcr", variables = nuc_ratios)
-CutPoint_lcr
-
 CutPoint_met <- surv_cutpoint(data = CoxData_natHist, time = "met_time", event = "met", variables = nuc_ratios)
 CutPoint_met
 
 SurvData_natHist_os <- surv_categorize(CutPoint_os)
-SurvData_natHist_lcr <- surv_categorize(CutPoint_lcr)
 SurvData_natHist_met <- surv_categorize(CutPoint_met)
 
 
 # re-add the other info
 SurvData_natHist_os$ERG_status <- as.factor(CoxData_natHist$ERG_status)
-SurvData_natHist_lcr$ERG_status <- as.factor(CoxData_natHist$ERG_status)
 SurvData_natHist_met$ERG_status <- as.factor(CoxData_natHist$ERG_status)
 
 SurvData_natHist_os$gleason_score <- as.factor(CoxData_natHist$pathgs)
-SurvData_natHist_lcr$gleason_score <- as.factor(CoxData_natHist$pathgs)
 SurvData_natHist_met$gleason_score <- as.factor(CoxData_natHist$pathgs)
 
 SurvData_natHist_os$pstage <- as.factor(CoxData_natHist$pstage)
-SurvData_natHist_lcr$pstage <- as.factor(CoxData_natHist$pstage)
 SurvData_natHist_met$pstage <- as.factor(CoxData_natHist$pstage)
 
 SurvData_natHist_os$preop_psa <- CoxData_natHist$preop_psa
-SurvData_natHist_lcr$preop_psa <- CoxData_natHist$preop_psa
 SurvData_natHist_met$preop_psa <- CoxData_natHist$preop_psa
 
 SurvData_natHist_os$age <- as.numeric(CoxData_natHist$age)
-SurvData_natHist_lcr$age <- as.numeric(CoxData_natHist$age)
 SurvData_natHist_met$age <- as.numeric(CoxData_natHist$age)
 
 SurvData_natHist_os$adt <- as.factor(CoxData_natHist$adt)
-SurvData_natHist_lcr$adt <- as.factor(CoxData_natHist$adt)
 SurvData_natHist_met$adt <- as.factor(CoxData_natHist$adt)
 
 SurvData_natHist_os$rt <- as.factor(CoxData_natHist$rt)
-SurvData_natHist_lcr$rt <- as.factor(CoxData_natHist$rt)
 SurvData_natHist_met$rt <- as.factor(CoxData_natHist$rt)
 
 SurvData_natHist_os$rp_type <- as.factor(CoxData_natHist$rp_type)
-SurvData_natHist_lcr$rp_type <- as.factor(CoxData_natHist$rp_type)
 SurvData_natHist_met$rp_type <- as.factor(CoxData_natHist$rp_type)
 
 SurvData_natHist_os$bmi <- as.numeric(CoxData_natHist$bmi)
-SurvData_natHist_lcr$bmi <- as.numeric(CoxData_natHist$bmi)
 SurvData_natHist_met$bmi <- as.numeric(CoxData_natHist$bmi)
 
 #################
@@ -229,80 +216,38 @@ names(nuc_ratios_list) <- nuc_ratios
 ###########
 ## functions for plotting km curves
 
-# os without erg status
+# os 
 surv_func_natHist_os <- function(x){
   f <- as.formula(paste("Surv(os_time, os) ~", x))
   return(surv_fit(f, data = SurvData_natHist_os))
 }
-# os with erg status
-surv_func_natHist_os_ergStatus <- function(x){
-  f <- as.formula(paste("Surv(os_time, os) ~", x, '+', 'ERG_status'))
-  return(surv_fit(f, data = SurvData_natHist_os))
-}
-# lcr without erg status
-surv_func_natHist_lcr <- function(x){
-  f <- as.formula(paste("Surv(lcr_time, lcr) ~", x))
-  return(surv_fit(f, data = SurvData_natHist_lcr))
-}
 
-# lcr with erg status
-surv_func_natHist_lcr_ergStatus <- function(x){
-  f <- as.formula(paste("Surv(lcr_time, lcr) ~", x, '+', 'ERG_status'))
-  return(surv_fit(f, data = SurvData_natHist_lcr))
-}
-
-# met without erg status
+# met
 surv_func_natHist_met <- function(x){
   f <- as.formula(paste("Surv(met_time, met) ~", x))
   return(surv_fit(f, data = SurvData_natHist_met))
 }
 
-# met with erg status
-surv_func_natHist_met_ergStatus <- function(x){
-  f <- as.formula(paste("Surv(met_time, met) ~", x, '+', 'ERG_status'))
-  return(surv_fit(f, data = SurvData_natHist_met))
-}
+
 
 ################
 # fit curves without erg status
 fit_list_nuclei_natHist_os <- lapply(nuc_ratios_list, surv_func_natHist_os)
-fit_list_nuclei_natHist_lcr <- lapply(nuc_ratios_list, surv_func_natHist_lcr)
 fit_list_nuclei_natHist_met <- lapply(nuc_ratios_list, surv_func_natHist_met)
-
-# fit curves with erg status
-fit_list_nuclei_natHist_os_ergStatus <- lapply(nuc_ratios_list, surv_func_natHist_os_ergStatus)
-fit_list_nuclei_natHist_lcr_ergStatus <- lapply(nuc_ratios_list, surv_func_natHist_lcr_ergStatus)
-fit_list_nuclei_natHist_met_ergStatus <- lapply(nuc_ratios_list, surv_func_natHist_met_ergStatus)
 
 ################
 # calculate the pvalue: without erg status
 Pval_list_nuclei_natHist_os <- surv_pvalue(fit_list_nuclei_natHist_os)
 Pval_df_nuclei_natHist_os <- do.call(rbind.data.frame, Pval_list_nuclei_natHist_os)
 
-Pval_list_nuclei_natHist_lcr <- surv_pvalue(fit_list_nuclei_natHist_lcr)
-Pval_df_nuclei_natHist_lcr <- do.call(rbind.data.frame, Pval_list_nuclei_natHist_lcr)
-
 Pval_list_nuclei_natHist_met <- surv_pvalue(fit_list_nuclei_natHist_met)
 Pval_df_nuclei_natHist_met <- do.call(rbind.data.frame, Pval_list_nuclei_natHist_met)
-
-# calculate the pvalue: with erg status
-Pval_list_nuclei_natHist_os_ergStatus <- surv_pvalue(fit_list_nuclei_natHist_os_ergStatus)
-Pval_df_nuclei_natHist_os_ergStatus <- do.call(rbind.data.frame, Pval_list_nuclei_natHist_os_ergStatus)
-
-Pval_list_nuclei_natHist_lcr_ergStatus <- surv_pvalue(fit_list_nuclei_natHist_lcr_ergStatus)
-Pval_df_nuclei_natHist_lcr_ergStatus <- do.call(rbind.data.frame, Pval_list_nuclei_natHist_lcr_ergStatus)
-
-Pval_list_nuclei_natHist_met_ergStatus <- surv_pvalue(fit_list_nuclei_natHist_met_ergStatus)
-Pval_df_nuclei_natHist_met_ergStatus <- do.call(rbind.data.frame, Pval_list_nuclei_natHist_met_ergStatus)
-
 
 #####################################################################################
 #####################################################################################
 ## indv figures
 
 # nat Hist
-
-## without erg status
 
 # OS
 
@@ -378,83 +323,6 @@ ggsurvplot(fit_list_nuclei_natHist_os$stroma_neoplastic_ratio,
 ) + guides(colour = guide_legend(ncol = 1))
 dev.off()
 
-
-#################
-# LCR
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_neoplastic.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_natHist_lcr$neoplastic_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('high neoplastic content', 'low neoplastic content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_immune.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_natHist_lcr$immune_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('high immune content', 'low immune content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_stroma.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_natHist_lcr$stroma_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('high stromal content', 'low stromal content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_necrotic.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_natHist_lcr$necrotic_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('high necrotic content', 'low necrotic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_benignEpith.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_natHist_lcr$benign_epithelial_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('high benign epithelial content', 'low benign epithelial content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 1))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_stroma_neoplastic_ratio.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_natHist_lcr$stroma_neoplastic_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('high stroma to neoplastic ratio', 'low stroma to neoplastic ratio'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 1))
-dev.off()
-
-
 #################
 # met
 
@@ -528,229 +396,6 @@ ggsurvplot(fit_list_nuclei_natHist_met$stroma_neoplastic_ratio,
            ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
            #facet.by = 'ERG_status'
 ) + guides(colour = guide_legend(ncol = 1))
-dev.off()
-
-####################################################################
-####################################################################
-# with erg status
-tiff(filename = './figures/survival/natHist/os/natHist_nuclei_os_byERGstatus_neoplastic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_os_ergStatus$neoplastic_ratio, 
-           data = SurvData_natHist_os, 
-           legend.title = '', 
-           legend.labs = c('ERG- high neoplastic content', 'ERG+ high neoplastic content', 'ERG- low neoplastic content', 'ERG+ low neoplastic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/os/natHist_nuclei_os_byERGstatus_immune.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_os_ergStatus$immune_ratio, 
-           data = SurvData_natHist_os, 
-           legend.title = '', 
-           legend.labs = c('ERG- high immune content', 'ERG+ high immune content', 'ERG- low immune content', 'ERG+ low immune content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/os/natHist_nuclei_os_byERGstatus_stroma.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_os_ergStatus$stroma_ratio, 
-           data = SurvData_natHist_os, 
-           legend.title = '', 
-           legend.labs = c('ERG- high stromal content', 'ERG+ high stromal content', 'ERG- low stromal content', 'ERG+ low stromal content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/os/natHist_nuclei_os_byERGstatus_necrotic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_os_ergStatus$necrotic_ratio, 
-           data = SurvData_natHist_os, 
-           legend.title = '', 
-           legend.labs = c('ERG- high necrotic content', 'ERG+ high necrotic content', 'ERG- low necrotic content', 'ERG+ low necrotic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/os/natHist_nuclei_os_byERGstatus_benignEpith.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_os_ergStatus$benign_epithelial_ratio, 
-           data = SurvData_natHist_os, 
-           legend.title = '', 
-           legend.labs = c('ERG- high benign epithelial content', 'ERG+ high benign epithelial content', 'ERG- low benign epithelial content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/os/natHist_nuclei_os_byERGstatus_stroma_neoplastic_ratio.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_os_ergStatus$stroma_neoplastic_ratio, 
-           data = SurvData_natHist_os, 
-           legend.title = '', 
-           legend.labs = c('ERG- high stroma to neoplastic ratio', 'ERG+ high stroma to neoplastic ratio', 'ERG- low stroma to neoplastic ratio', 'ERG+ low stroma to neoplastic ratio'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-##################################
-# LCR
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_byERGstatus_neoplastic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_lcr_ergStatus$neoplastic_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('ERG- high neoplastic content', 'ERG+ high neoplastic content', 'ERG- low neoplastic content', 'ERG+ low neoplastic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_byERGstatus_immune.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_lcr_ergStatus$immune_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('ERG- high immune content', 'ERG+ high immune content', 'ERG- low immune content', 'ERG+ low immune content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_byERGstatus_stroma.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_lcr_ergStatus$stroma_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('ERG- high stromal content', 'ERG+ high stromal content', 'ERG- low stromal content', 'ERG+ low stromal content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_byERGstatus_necrotic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_lcr_ergStatus$necrotic_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('ERG- high necrotic content', 'ERG+ high necrotic content', 'ERG- low necrotic content', 'ERG+ low necrotic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_byERGstatus_benignEpith.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_lcr_ergStatus$benign_epithelial_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('ERG- high benign epithelial content', 'ERG+ high benign epithelial content', 'ERG- low benign epithelial content', 'ERG+ low benign epithelial content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/lcr/natHist_nuclei_lcr_byERGstatus_stroma_neoplastic_ratio.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_lcr_ergStatus$stroma_neoplastic_ratio, 
-           data = SurvData_natHist_lcr, 
-           legend.title = '', 
-           legend.labs = c('ERG- high stroma to neoplastic ratio', 'ERG+ high stroma to neoplastic ratio', 'ERG- low stroma to neoplastic ratio', 'ERG+ low stroma to neoplastic ratio'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-##################################
-# met
-tiff(filename = './figures/survival/natHist/met/natHist_nuclei_met_byERGstatus_neoplastic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_met_ergStatus$neoplastic_ratio, 
-           data = SurvData_natHist_met, 
-           legend.title = '', 
-           legend.labs = c('ERG- high neoplastic content', 'ERG- low neoplastic content', 'ERG+ low neoplastic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/met/natHist_nuclei_met_byERGstatus_immune.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_met_ergStatus$immune_ratio, 
-           data = SurvData_natHist_met, 
-           legend.title = '', 
-           legend.labs = c('ERG- high immune content', 'ERG+ high immune content', 'ERG- low immune content', 'ERG+ low immune content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/met/natHist_nuclei_met_byERGstatus_stroma.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_met_ergStatus$stroma_ratio, 
-           data = SurvData_natHist_met, 
-           legend.title = '', 
-           legend.labs = c('ERG- high stromal content', 'ERG+ high stromal content', 'ERG- low stromal content', 'ERG+ low stromal content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/met/natHist_nuclei_met_byERGstatus_necrotic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_met_ergStatus$necrotic_ratio, 
-           data = SurvData_natHist_met, 
-           legend.title = '', 
-           legend.labs = c('ERG- high necrotic content', 'ERG+ high necrotic content', 'ERG- low necrotic content', 'ERG+ low necrotic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/met/natHist_nuclei_met_byERGstatus_benignEpith.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_met_ergStatus$benign_epithelial_ratio, 
-           data = SurvData_natHist_met, 
-           legend.title = '', 
-           legend.labs = c('ERG- high benign epithelial content', 'ERG+ high benign epithelial content', 'ERG- low benign epithelial content', 'ERG+ low benign epithelial content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/natHist/met/natHist_nuclei_met_byERGstatus_stroma_neoplastic_ratio.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_natHist_met_ergStatus$stroma_neoplastic_ratio, 
-           data = SurvData_natHist_met, 
-           legend.title = '', 
-           legend.labs = c('ERG- high stroma to neoplastic ratio', 'ERG+ high stroma to neoplastic ratio', 'ERG- low stroma to neoplastic ratio', 'ERG+ low stroma to neoplastic ratio'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
 dev.off()
 
 

@@ -12,7 +12,7 @@ import anndata as ad
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
 
-hovernet_output_path = '/data/projects/deep_learning/PCa/outs/hovernet_wsi/json/'
+hovernet_output_path = 'hovernet_wsi/output/tcga/json/'
 
 
 def process_json(json_path):
@@ -48,7 +48,7 @@ def process_json(json_path):
 def worker(json_path):
     return process_json(json_path)
 
-hovernet_output_folder = '/data/projects/deep_learning/PCa/outs/hovernet_wsi/json'
+hovernet_output_folder = 'hovernet_wsi/output/tcga/json'
 
 # Get list of JSON files
 json_paths = glob(os.path.join(hovernet_output_folder, '*.json'))
@@ -69,4 +69,5 @@ df = pd.DataFrame(results)
 # Set patient_id as the index
 df.set_index('patient_id', inplace=True)
 
-print(df.head())
+# save to csv
+df.to_csv('hovernet_wsi/output/tcga/tcga_cellularComposition_wsi.csv')

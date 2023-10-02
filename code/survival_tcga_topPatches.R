@@ -170,36 +170,27 @@ table(tcga_clinical_nuclei$pred)
 ## survival
 #colnames(tcga_clinical_nuclei) <- gsub('_', ' ', colnames(tcga_clinical_nuclei))
 
-CoxData_tcga <- tcga_clinical_nuclei[, c("OS", "OS_Time", "PFI", "PFI_Time", "gleason_score",
+CoxData_tcga <- tcga_clinical_nuclei[, c("PFI", "PFI_Time", "gleason_score",
                                            "neoplastic_ratio", "immune_ratio", "stroma_ratio", "necrotic_ratio", "benign_epithelial_ratio", "stroma_neoplastic_ratio", 
                                          'ERG_status', 'pred', 'psa_value', 'pathologic_t', 'pathologic_n', 'pathologic_m')]
 
 nuc_ratios <- c("neoplastic_ratio", "immune_ratio", "stroma_ratio", "necrotic_ratio", "benign_epithelial_ratio", "stroma_neoplastic_ratio")
 
-CutPoint_os <- surv_cutpoint(data = CoxData_tcga, time = "OS_Time", event = "OS", variables = nuc_ratios)
-CutPoint_os
-
 CutPoint_pfs <- surv_cutpoint(data = CoxData_tcga, time = "PFI_Time", event = "PFI", variables = nuc_ratios)
 CutPoint_pfs
 
-SurvData_tcga_os <- surv_categorize(CutPoint_os)
 SurvData_tcga_pfs <- surv_categorize(CutPoint_pfs)
 
 
 # re-add the other info
-SurvData_tcga_os$ERG_status <- as.factor(CoxData_tcga$ERG_status)
 SurvData_tcga_pfs$ERG_status <- as.factor(CoxData_tcga$ERG_status)
 
-SurvData_tcga_os$gleason_score <- as.factor(CoxData_tcga$gleason_score)
 SurvData_tcga_pfs$gleason_score <- as.factor(CoxData_tcga$gleason_score)
 
-SurvData_tcga_os$psa_value <- CoxData_tcga$psa_value
 SurvData_tcga_pfs$psa_value <- CoxData_tcga$psa_value
 
-SurvData_tcga_os$pathologic_t <- as.factor(CoxData_tcga$pathologic_t)
 SurvData_tcga_pfs$pathologic_t <- as.factor(CoxData_tcga$pathologic_t)
 
-SurvData_tcga_os$pathologic_n <- as.factor(CoxData_tcga$pathologic_n)
 SurvData_tcga_pfs$pathologic_n <- as.factor(CoxData_tcga$pathologic_n)
 
 
@@ -211,193 +202,21 @@ names(nuc_ratios_list) <- nuc_ratios
 ###########
 ## functions for plotting km curves
 
-# os without erg status
-surv_func_tcga_os <- function(x){
-  f <- as.formula(paste("Surv(OS_Time, OS) ~", x))
-  return(surv_fit(f, data = SurvData_tcga_os))
-}
-# os with erg status
-surv_func_tcga_os_ergStatus <- function(x){
-  f <- as.formula(paste("Surv(OS_Time, OS) ~", x, '+', 'ERG_status'))
-  return(surv_fit(f, data = SurvData_tcga_os))
-}
 # pfs without erg status
 surv_func_tcga_pfs <- function(x){
   f <- as.formula(paste("Surv(PFI_Time, PFI) ~", x))
   return(surv_fit(f, data = SurvData_tcga_pfs))
 }
 
-# pfs with erg status
-surv_func_tcga_pfs_ergStatus <- function(x){
-  f <- as.formula(paste("Surv(PFI_Time, PFI) ~", x, '+', 'ERG_status'))
-  return(surv_fit(f, data = SurvData_tcga_pfs))
-}
 
 ################
-# fit curves without erg status
-fit_list_nuclei_tcga_os <- lapply(nuc_ratios_list, surv_func_tcga_os)
+# fit curves 
 fit_list_nuclei_tcga_pfs <- lapply(nuc_ratios_list, surv_func_tcga_pfs)
 
-# fit curves with erg status
-fit_list_nuclei_tcga_os_ergStatus <- lapply(nuc_ratios_list, surv_func_tcga_os_ergStatus)
-fit_list_nuclei_tcga_pfs_ergStatus <- lapply(nuc_ratios_list, surv_func_tcga_pfs_ergStatus)
-
-################
-# calculate the pvalue: without erg status
-Pval_list_nuclei_tcga_os <- surv_pvalue(fit_list_nuclei_tcga_os)
-Pval_df_nuclei_tcga_os <- do.call(rbind.data.frame, Pval_list_nuclei_tcga_os)
-
+#############
+# calculate the pvalue
 Pval_list_nuclei_tcga_pfs <- surv_pvalue(fit_list_nuclei_tcga_pfs)
 Pval_df_nuclei_tcga_pfs <- do.call(rbind.data.frame, Pval_list_nuclei_tcga_pfs)
-
-# calculate the pvalue: with erg status
-Pval_list_nuclei_tcga_os_ergStatus <- surv_pvalue(fit_list_nuclei_tcga_os_ergStatus)
-Pval_df_nuclei_tcga_os_ergStatus <- do.call(rbind.data.frame, Pval_list_nuclei_tcga_os_ergStatus)
-
-Pval_list_nuclei_tcga_pfs_ergStatus <- surv_pvalue(fit_list_nuclei_tcga_pfs_ergStatus)
-Pval_df_nuclei_tcga_pfs_ergStatus <- do.call(rbind.data.frame, Pval_list_nuclei_tcga_pfs_ergStatus)
-
-####################################
-## Plot survival curves
-
-# # without erg status
-# plot_list_nuclei_tcga_os <- ggsurvplot_list(fit_list_nuclei_tcga_os, 
-#                                             data = SurvData_tcga_os, 
-#                                             legend.title = names(fit_list_nuclei_tcga_os), 
-#                                             pval = TRUE)
-# 
-# plot_list_nuclei_tcga_pfs <- ggsurvplot_list(fit_list_nuclei_tcga_pfs, 
-#                                              data = SurvData_tcga_pfs, 
-#                                              legend.title = names(fit_list_nuclei_tcga_pfs), 
-#                                              pval = TRUE)
-# 
-# 
-# Splot_tcga_os <- arrange_ggsurvplots(plot_list_nuclei_tcga_os, title = "Overall Survival plots using the nuclei ratios", ncol = 2, nrow = 3)
-# Splot_tcga_pfs <- arrange_ggsurvplots(plot_list_nuclei_tcga_pfs, title = "Progression Free Survival plots using the nuclei ratios", ncol = 2, nrow = 3)
-# 
-# ggsave("./figures/tcga_nuclei_os.pdf", Splot_tcga_os, width = 40, height = 40, units = "cm")
-# ggsave("./figures/tcga_nuclei_pfs.pdf", Splot_tcga_pfs, width = 40, height = 40, units = "cm")
-# 
-# 
-# ############
-# # with erg status
-# plot_list_nuclei_tcga_os_ergStatus <- ggsurvplot_list(fit_list_nuclei_tcga_os_ergStatus, 
-#                                             data = SurvData_tcga_os, 
-#                                             legend.title = names(fit_list_nuclei_tcga_os_ergStatus), 
-#                                             pval = TRUE, 
-#                                             #facet.by = 'ERG_status'
-#                                             )
-# 
-# Labs_list <- list(neoplastic_ratio = c('ERG- high neoplastic content', 'ERG+ high neoplastic content', 'ERG- low neoplastic content', 'ERG+ low neoplastic content'), 
-#                   immune_ratio = c('ERG- high immune content', 'ERG+ high immune content', 'ERG- low immune content', 'ERG+ low immune content'), 
-#                   stromal_ratio= c('ERG- high stromal content', 'ERG+ high stromal content', 'ERG- low stromal content', 'ERG+ low stromal content'),
-#                   necrotic_ratio = c('ERG- high necrotic content', 'ERG+ high necrotic content', 'ERG- low necrotic content', 'ERG+ low necrotic content'),
-#                   benign_epithial_ratio = c('ERG- high benign epith content', 'ERG+ high benign epith content', 'ERG- low benign epith content', 'ERG+ low benign epith content'), 
-#                   stromal_neoplastic_ratio = c('ERG- high stromal/neoplastic ratio', 'ERG+ high stromal/neoplastic ratio', 'ERG- low stromal/neoplastic ratio', 'ERG+ low stromal/neoplastic ratio')
-#                 )
-# 
-# 
-# plot_list_nuclei_tcga_pfs_ergStatus <- ggsurvplot_list(fit_list_nuclei_tcga_pfs_ergStatus, 
-#                                              data = SurvData_tcga_pfs, 
-#                                              legend.title = '', 
-#                                              legend.labs = Labs_list,
-#                                              pval = TRUE, 
-#                                              pval.size =	10,
-#                                              ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-#                                              #facet.by = 'ERG_status'
-#                                              ) 
-# 
-# Splot_tcga_os_ergStatus <- arrange_ggsurvplots(plot_list_nuclei_tcga_os_ergStatus, #title = "Overall Survival plots using the nuclei ratios", 
-#                                                ncol = 2, nrow = 3)
-# 
-# Splot_tcga_pfs_ergStatus <- arrange_ggsurvplots(plot_list_nuclei_tcga_pfs_ergStatus, #title = "Progression Free Survival plots using the nuclei ratios", 
-#                                                 ncol = 2, nrow = 3)
-# 
-# ggsave("./figures/tcga_nuclei_os_byERGstatus.pdf", Splot_tcga_os_ergStatus, width = 40, height = 40, units = "cm")
-# ggsave("./figures/tcga_nuclei_pfs_byERGstatus.pdf", Splot_tcga_pfs_ergStatus, width = 60, height = 65, units = "cm")
-
-#####################################################################################
-#####################################################################################
-## indv figures
-
-# TCGA
-
-## without erg status
-
-# OS
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_neoplastic.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_tcga_os$neoplastic_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           legend.labs = c('high neoplastic content', 'low neoplastic content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_immune.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_tcga_os$immune_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           legend.labs = c('high immune content', 'low immune content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_stroma.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_tcga_os$stroma_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           legend.labs = c('high stromal content', 'low stromal content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_necrotic.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_tcga_os$necrotic_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           legend.labs = c('high necrotic content', 'low necrotic content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_benignEpith.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_tcga_os$benign_epithelial_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           legend.labs = c('high benign epithelial content', 'low benign epithelial content'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 1))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_stroma_neoplastic_ratio.tiff', width = 2500, height = 2500, res = 400)
-ggsurvplot(fit_list_nuclei_tcga_os$stroma_neoplastic_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           legend.labs = c('high stroma to neoplastic ratio', 'low stroma to neoplastic ratio'),
-           pval = TRUE, 
-           pval.size =	10,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(16, 'bold', 'black'), font.legend = c(16, "plain", "black")),
-           #facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 1))
-dev.off()
-
 
 #################
 # PFS
@@ -475,155 +294,6 @@ ggsurvplot(fit_list_nuclei_tcga_pfs$stroma_neoplastic_ratio,
 dev.off()
 
 
-####################################################################
-####################################################################
-# with erg status
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_byERGstatus_neoplastic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_os_ergStatus$neoplastic_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high neoplastic content', 'ERG+ high neoplastic content', 'ERG- low neoplastic content', 'ERG+ low neoplastic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = "ERG_status",
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_byERGstatus_immune.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_os_ergStatus$immune_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high immune content', 'ERG+ high immune content', 'ERG- low immune content', 'ERG+ low immune content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_byERGstatus_stroma.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_os_ergStatus$stroma_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high stromal content', 'ERG+ high stromal content', 'ERG- low stromal content', 'ERG+ low stromal content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_byERGstatus_necrotic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_os_ergStatus$necrotic_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high necrotic content', 'ERG+ high necrotic content', 'ERG- low necrotic content', 'ERG+ low necrotic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_byERGstatus_benignEpith.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_os_ergStatus$benign_epithelial_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high benign epithelial content', 'ERG+ high benign epithelial content', 'ERG- low benign epithelial content', 'ERG+ low benign epithelial content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/os/tcga_nuclei_os_byERGstatus_stroma_neoplastic_ratio.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_os_ergStatus$stroma_neoplastic_ratio, 
-           data = SurvData_tcga_os, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high stroma to neoplastic ratio', 'ERG+ high stroma to neoplastic ratio', 'ERG- low stroma to neoplastic ratio', 'ERG+ low stroma to neoplastic ratio'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-##################################
-# pfs
-tiff(filename = './figures/survival/tcga/pfs/tcga_nuclei_pfs_byERGstatus_neoplastic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_pfs_ergStatus$neoplastic_ratio, 
-           data = SurvData_tcga_pfs, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high neoplastic content', 'ERG+ high neoplastic content', 'ERG- low neoplastic content', 'ERG+ low neoplastic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/pfs/tcga_nuclei_pfs_byERGstatus_immune.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_pfs_ergStatus$immune_ratio, 
-           data = SurvData_tcga_pfs, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high immune content', 'ERG+ high immune content', 'ERG- low immune content', 'ERG+ low immune content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/pfs/tcga_nuclei_pfs_byERGstatus_stroma.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_pfs_ergStatus$stroma_ratio, 
-           data = SurvData_tcga_pfs, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high stromal content', 'ERG+ high stromal content', 'ERG- low stromal content', 'ERG+ low stromal content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/pfs/tcga_nuclei_pfs_byERGstatus_necrotic.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_pfs_ergStatus$necrotic_ratio, 
-           data = SurvData_tcga_pfs, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high necrotic content', 'ERG+ high necrotic content', 'ERG- low necrotic content', 'ERG+ low necrotic content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/pfs/tcga_nuclei_pfs_byERGstatus_benignEpith.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_pfs_ergStatus$benign_epithelial_ratio, 
-           data = SurvData_tcga_pfs, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high benign epithelial content', 'ERG+ high benign epithelial content', 'ERG- low benign epithelial content', 'ERG+ low benign epithelial content'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
-tiff(filename = './figures/survival/tcga/pfs/tcga_nuclei_pfs_byERGstatus_stroma_neoplastic_ratio.tiff', width = 2500, height = 2500, res = 300)
-ggsurvplot(fit_list_nuclei_tcga_pfs_ergStatus$stroma_neoplastic_ratio, 
-           data = SurvData_tcga_pfs, 
-           legend.title = '', 
-           #legend.labs = c('ERG- high stroma to neoplastic ratio', 'ERG+ high stroma to neoplastic ratio', 'ERG- low stroma to neoplastic ratio', 'ERG+ low stroma to neoplastic ratio'),
-           pval = TRUE, 
-           pval.size =	8,
-           ggtheme = theme_survminer(base_size = 12, font.main = c(12, 'bold', 'black'), font.legend = c(14, "plain", "black")),
-           facet.by = 'ERG_status'
-) + guides(colour = guide_legend(ncol = 2))
-dev.off()
-
 ###########################################################################################
 ###########################################################################################
 ## COXPH
@@ -638,11 +308,6 @@ SurvData_tcga_pfs$stroma_neoplastic_ratio <- factor(SurvData_tcga_pfs$stroma_neo
 SurvData_tcga_pfs$gleason_score_binary <- SurvData_tcga_pfs$gleason_score
 table(SurvData_tcga_pfs$gleason_score_binary)
 levels(SurvData_tcga_pfs$gleason_score_binary) <- c('<8', '<8', '>=8', '>=8', '>=8')
-
-# CoxData_tcga$gleason_score <- as.factor(CoxData_tcga$gleason_score)
-# CoxData_tcga$gleason_score_binary <- CoxData_tcga$gleason_score
-# table(CoxData_tcga$gleason_score_binary)
-# levels(CoxData_tcga$gleason_score_binary) <- c('<8', '<8', '>=8', '>=8', '>=8')
 
 # neoplastic
 Fit_sig_tcga_pfs_coxph_neoplastic <- coxph(Surv(PFI_Time, PFI) ~ neoplastic_ratio + gleason_score_binary + pathologic_t + pathologic_n, 
@@ -696,15 +361,6 @@ Fit_sig_tcga_pfs_coxph_stroma_neoplastic <- coxph(Surv(PFI_Time, PFI) ~ stroma_n
 
 tiff(filename = './figures/survival/tcga/pfs/tcga_stroma_neoplastic_ratio_cox.tiff', width = 2500, height = 2500, res = 300)
 ggforest(Fit_sig_tcga_pfs_coxph_stroma_neoplastic)
-dev.off()
-
-###################################
-# with all cell ratios and gleason
-Fit_sig_tcga_pfs_coxph_all <- coxph(Surv(PFI_Time, PFI) ~ + neoplastic_ratio+benign_epithelial_ratio+stroma_ratio+immune_ratio+necrotic_ratio+stroma_neoplastic_ratio+gleason_score_binary+ pathologic_t + pathologic_n, 
-                                data = SurvData_tcga_pfs)
-
-tiff(filename = './figures/survival/tcga/pfs/tcga_all_cox.tiff', width = 2500, height = 2500, res = 300)
-ggforest(Fit_sig_tcga_pfs_coxph_all)
 dev.off()
 
 
